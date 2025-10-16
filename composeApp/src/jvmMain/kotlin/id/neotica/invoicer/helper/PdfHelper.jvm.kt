@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.IntSize
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
-import org.jetbrains.skia.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -21,16 +20,30 @@ actual fun renderComposableToBitmap(
     saveBufferedImageAsPdf(bufferedImage, File("output.pdf"))
 }
 
-fun renderComposableToBitmapDesktop(composable: @Composable () -> Unit, size: IntSize): BufferedImage {
-    val scene = ImageComposeScene(
-        density = Density(1f),
-        width = size.width,
-        height = size.height
+fun renderComposableToBitmapDesktop(
+    composable: @Composable () -> Unit,
+    baseSize: IntSize, // The size at 1x scale (e.g., 595, 842 for A4)
+    scaleFactor: Float = 4f // 4x scale gives ~300 DPI, great for printing
+): BufferedImage {
+    // Calculate the final pixel dimensions
+    val finalSize = IntSize(
+        width = (baseSize.width * scaleFactor).toInt(),
+        height = (baseSize.height * scaleFactor).toInt()
     )
-    scene.setContent { composable() }
-    val imageBitmap: Image = scene.render(0L)
-    scene.close()
-    return imageBitmap.toComposeImageBitmap().toAwtImage()
+
+    val scene = ImageComposeScene(
+        density = Density(scaleFactor), // Use the scale factor as the density!
+        width = finalSize.width,
+        height = finalSize.height
+    )
+
+    try {
+        scene.setContent { composable() }
+        val skiaImage: org.jetbrains.skia.Image = scene.render()
+        return skiaImage.toComposeImageBitmap().toAwtImage()
+    } finally {
+        scene.close()
+    }
 }
 
 fun saveBufferedImageAsPdf(image: BufferedImage, file: File) {

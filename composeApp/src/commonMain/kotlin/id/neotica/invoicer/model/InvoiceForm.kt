@@ -6,4 +6,5 @@ data class InvoiceForm(
     val invoiceNumber: String,
     val billTo: String,
     val date: String,
+    val dueDate: String
 )
