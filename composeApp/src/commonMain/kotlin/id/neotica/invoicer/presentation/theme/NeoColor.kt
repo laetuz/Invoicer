@@ -1,4 +1,4 @@
-package id.neotica.invoicer.ui
+package id.neotica.invoicer.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -16,18 +16,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import id.neotica.invoicer.helper.toIdr
-import id.neotica.invoicer.helper.toUsd
+import id.neotica.invoicer.helper.CURRENCY
+import id.neotica.invoicer.helper.currencyType
 import id.neotica.invoicer.model.InvoiceForm
 import id.neotica.invoicer.model.itemDummy1
 import id.neotica.invoicer.model.itemDummy2
 import id.neotica.invoicer.model.itemDummy3
-import id.neotica.invoicer.ui.NeoColor
+import id.neotica.invoicer.presentation.theme.NeoColor
 
 @Composable
-fun InvoiceScreen(model: InvoiceForm) {
+fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
 
-    val currencyType = CURRENCY.IDR
+    val currencyType = currency
 
     LazyColumn(
         Modifier
@@ -182,22 +182,4 @@ fun InvoiceScreen(model: InvoiceForm) {
             }
         }
     }
-
-//    fun currencyType(type: String): String {
-//        when (type) {
-//            is "USD" -> to
-//        }
-//    }
-}
-
-private fun Long.currencyType(type: CURRENCY): String {
-    return when (type) {
-        CURRENCY.IDR -> this.toIdr()
-        CURRENCY.USD -> this.toUsd()
-    }
-}
-
-sealed class CURRENCY {
-    object IDR : CURRENCY()
-    object USD : CURRENCY()
 }
