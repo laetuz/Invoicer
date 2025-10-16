@@ -17,7 +17,16 @@ actual fun renderComposableToBitmap(
     size: IntSize
 ) {
     val bufferedImage = renderComposableToBitmapDesktop(composable, size)
-    saveBufferedImageAsPdf(bufferedImage, File("output.pdf"))
+
+    val downloadsDir = File(System.getProperty("user.home"), "Downloads")
+
+    val outputFile = File(downloadsDir, "invoice-${System.currentTimeMillis()}.pdf")
+
+    if (!downloadsDir.exists()) {
+        downloadsDir.mkdirs() // Create it if it doesn't exist
+    }
+
+    saveBufferedImageAsPdf(bufferedImage, outputFile)
 }
 
 fun renderComposableToBitmapDesktop(
