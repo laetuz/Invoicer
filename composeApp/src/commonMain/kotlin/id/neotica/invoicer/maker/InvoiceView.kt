@@ -19,13 +19,11 @@ import androidx.compose.ui.unit.sp
 import id.neotica.invoicer.helper.CURRENCY
 import id.neotica.invoicer.helper.currencyType
 import id.neotica.invoicer.model.InvoiceForm
-import id.neotica.invoicer.model.itemDummy1
-import id.neotica.invoicer.model.itemDummy2
-import id.neotica.invoicer.model.itemDummy3
+import id.neotica.invoicer.model.Item
 import id.neotica.invoicer.presentation.theme.NeoColor
 
 @Composable
-fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
+fun InvoiceScreen(model: InvoiceForm, items: List<Item>, currency: CURRENCY) {
 
     val currencyType = currency
 
@@ -48,10 +46,12 @@ fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp
                     )
-                    Text(
-                        text = "#${model.invoiceNumber}",
-                        modifier = Modifier.alpha(0.5f)
-                    )
+                    if (model.invoiceNumber > 0) {
+                        Text(
+                            text = "#${model.invoiceNumber}",
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    }
                 }
             }
             Spacer(Modifier.padding(8.dp))
@@ -82,19 +82,18 @@ fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
                         )
                         Text(model.date)
                     }
-                    Row {
-                        Text(
-                            text = "Due Date: ",
-                            modifier = Modifier.alpha(0.5f)
-                        )
-                        Text(model.dueDate)
+                    if (model.dueDate.isNotEmpty()) {
+                        Row {
+                            Text(
+                                text = "Due Date: ",
+                                modifier = Modifier.alpha(0.5f)
+                            )
+                            Text(model.dueDate)
+                        }
                     }
 
                 }
             }
-            val itemList = listOf(
-                itemDummy1, itemDummy2, itemDummy1, itemDummy3
-            )
             Row(
                 modifier = Modifier.fillMaxWidth().background(NeoColor.black),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -133,40 +132,28 @@ fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
                     )
                 }
             }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                Column(
-                    Modifier.weight(2f)
-                ) {
-                    itemList.forEach {
+            ItemRowComponent(
+                rowOne = {
+                    items.forEach {
                         Text(it.name)
                     }
-                }
-                Column(
-                    Modifier.weight(1f)
-                ) {
-                    itemList.forEach {
+                },
+                rowTwo = {
+                    items.forEach {
                         Text(it.quantity.toString())
                     }
-                }
-                Column(
-                    Modifier.weight(1f)
-                ) {
-                    itemList.forEach {
+                },
+                rowThree = {
+                    items.forEach {
                         Text(it.rate.currencyType(currencyType))
                     }
-                }
-                Column(
-                    Modifier.weight(1f)
-                ) {
-                    itemList.forEach {
+                },
+                rowFour = {
+                    items.forEach {
                         Text((it.quantity * it.rate).currencyType(currencyType))
                     }
                 }
-            }
+            )
             Row(
                 Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -176,7 +163,7 @@ fun InvoiceScreen(model: InvoiceForm, currency: CURRENCY) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = itemList.sumOf { it.quantity * it.rate }.currencyType(currencyType),
+                    text = items.sumOf { it.quantity * it.rate }.currencyType(currencyType),
                     fontWeight = FontWeight.Bold
                 )
             }
