@@ -68,3 +68,5 @@ fun saveBufferedImageAsPdf(image: BufferedImage, file: File) {
     document.save(file)
     document.close()
 }
+
+actual class PlatformContextGetter

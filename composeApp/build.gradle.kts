@@ -16,17 +16,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
+
     jvm()
     
     sourceSets {
@@ -45,6 +35,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.neotoast)
+            api(libs.bundles.koin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

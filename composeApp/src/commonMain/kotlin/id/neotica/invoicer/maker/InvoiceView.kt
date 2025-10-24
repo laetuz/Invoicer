@@ -20,6 +20,7 @@ import id.neotica.invoicer.helper.CURRENCY
 import id.neotica.invoicer.helper.currencyType
 import id.neotica.invoicer.model.InvoiceForm
 import id.neotica.invoicer.model.Item
+import id.neotica.invoicer.presentation.components.ItemRowComponent
 import id.neotica.invoicer.presentation.theme.NeoColor
 
 @Composable
@@ -132,28 +133,16 @@ fun InvoiceScreen(model: InvoiceForm, items: List<Item>, currency: CURRENCY) {
                     )
                 }
             }
-            ItemRowComponent(
-                rowOne = {
-                    items.forEach {
-                        Text(it.name)
-                    }
-                },
-                rowTwo = {
-                    items.forEach {
-                        Text(it.quantity.toString())
-                    }
-                },
-                rowThree = {
-                    items.forEach {
-                        Text(it.rate.currencyType(currencyType))
-                    }
-                },
-                rowFour = {
-                    items.forEach {
-                        Text((it.quantity * it.rate).currencyType(currencyType))
-                    }
-                }
-            )
+
+            items.forEach {
+                ItemRowComponent(
+                    rowOne = { Text(it.name) },
+                    rowTwo = { Text(it.quantity.toString()) },
+                    rowThree = { Text(it.rate.currencyType(currencyType)) },
+                    rowFour = { Text((it.quantity * it.rate).currencyType(currencyType)) }
+                )
+            }
+
             Row(
                 Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
