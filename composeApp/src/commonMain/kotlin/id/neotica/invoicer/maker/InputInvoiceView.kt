@@ -1,7 +1,6 @@
 package id.neotica.invoicer.maker
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -24,7 +22,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -38,6 +35,8 @@ import id.neotica.invoicer.model.itemDummy2
 import id.neotica.invoicer.model.itemDummy3
 import id.neotica.invoicer.presentation.components.ItemRowComponent
 import id.neotica.invoicer.presentation.components.NeoDatePicker
+import id.neotica.invoicer.presentation.components.SheetButton
+import id.neotica.invoicer.presentation.components.SheetTextField
 import id.neotica.invoicer.presentation.components.SimpleDropdownMenu
 import id.neotica.invoicer.presentation.theme.NeoColor
 import id.neotica.toast.ToastManager
@@ -226,21 +225,7 @@ fun InputInvoiceScreen() {
                         Column {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                ->
-                                Text(
-                                    text = "Delete",
-                                    color = NeoColor.white,
-                                    modifier = Modifier
-                                        .clickable {
-                                            itemList.remove(it)
-                                        }
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(NeoColor.red)
-                                        .padding(horizontal = 8.dp)
-                                )
-                                Text(it.name)
-                            }
+                            ) { Text(it.name) }
                         }
                     },
                     rowTwo = {
@@ -250,7 +235,19 @@ fun InputInvoiceScreen() {
                         Text(it.rate.currencyType(currencyType))
                     },
                     rowFour= {
-                        Text((it.quantity * it.rate).currencyType(currencyType))
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text((it.quantity * it.rate).currencyType(currencyType))
+                            // Delete item
+                            SheetButton(
+                                text = "🗑️",
+                                modifier = Modifier.padding(start = 4.dp),
+                                color = NeoColor.grey
+                            ) {
+                                itemList.remove(it)
+                            }
+                        }
                     },
                 )
                 HorizontalDivider(Modifier.padding(2.dp).alpha(0.2f), DividerDefaults.Thickness, NeoColor.black)
@@ -266,7 +263,7 @@ fun InputInvoiceScreen() {
             if (addItemState) {
                 ItemRowComponent(
                     rowOne = {
-                        OutlinedTextField(
+                        SheetTextField(
                             value = itemMock.name,
                             onValueChange = {
                                 itemMock = itemMock.copy(name = it)
@@ -274,7 +271,7 @@ fun InputInvoiceScreen() {
                         )
                     },
                     rowTwo = {
-                        OutlinedTextField(
+                        SheetTextField(
                             value = if (itemMock.quantity == 0) "" else itemMock.quantity.toString(),
                             onValueChange = {
                                 val qty = it.toIntOrNull() ?: 0
@@ -283,7 +280,7 @@ fun InputInvoiceScreen() {
                         )
                     },
                     rowThree = {
-                        OutlinedTextField(
+                        SheetTextField(
                             value = if (itemMock.rate == 0L) "" else itemMock.rate.toString(),
                             onValueChange = {
                                 val rate = it.toLongOrNull() ?: 0
@@ -292,42 +289,48 @@ fun InputInvoiceScreen() {
                         )
                     },
                     rowFour = {
-                        Button({ addItemState = false }) { Text("Cancel") }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            SheetButton(
+                                text = "❌",
+                                color = NeoColor.red
+                            ) {
+                                addItemState = false
+                            }
+                            SheetButton(
+                                text = "✔️",
+                                color = NeoColor.black
+                            ) {
+                                when {
+                                    itemMock.name.isBlank() -> toastManager.showToast("Name is empty")
+                                    itemMock.rate == 0L -> toastManager.showToast("Rate is empty")
+                                    itemMock.quantity == 0 -> toastManager.showToast("Quantity is empty")
+                                    itemMock.name.isNotBlank() && itemMock.rate != 0L && itemMock.quantity != 0 -> {
+                                        itemList.add(itemMock)
+                                        toastManager.showToast("Item added")
+                                        addItemState = !addItemState
+                                    }
+                                    else -> toastManager.showToast("Item is empty")
+                                }
+                            }
+                        }
                     }
                 )
 
-                Button(
-                    onClick = {
-                        when {
-                            itemMock.name.isBlank() -> toastManager.showToast("Name is empty")
-                            itemMock.rate == 0L -> toastManager.showToast("Rate is empty")
-                            itemMock.quantity == 0 -> toastManager.showToast("Quantity is empty")
-                            itemMock.name.isNotBlank() && itemMock.rate != 0L && itemMock.quantity != 0 -> {
-                                itemList.add(itemMock)
-                                toastManager.showToast("Item added")
-                                addItemState = !addItemState
-                            }
-                            else -> toastManager.showToast("Item is empty")
-                        }
-
-                    }
-                ) {
-                    Text("Add item")
-                }
-
-                Text(addItemState.toString())
+                HorizontalDivider(Modifier.padding(2.dp).alpha(0.2f), DividerDefaults.Thickness, NeoColor.black)
             } else {
-                Button(
-                    onClick = {
-                        addItemState = !addItemState
-                        itemMock = Item(
-                            name = "",
-                            quantity = 0,
-                            rate = 0,
-                        )
-                    }
+                SheetButton(
+                    text = "Add Item",
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = NeoColor.black
                 ) {
-                    Text("Add item")
+                    addItemState = !addItemState
+                    itemMock = Item(
+                        name = "",
+                        quantity = 0,
+                        rate = 0,
+                    )
                 }
             }
 
