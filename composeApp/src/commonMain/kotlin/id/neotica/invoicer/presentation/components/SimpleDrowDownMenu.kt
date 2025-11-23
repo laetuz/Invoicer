@@ -1,13 +1,15 @@
 package id.neotica.invoicer.presentation.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,37 +21,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SimpleDropdownMenu(label: String, items: List<String>, selected: (String) -> Unit) {
+fun SimpleDropdownMenu(
+    label: String,
+    items: List<String>,
+    modifier: Modifier = Modifier,
+    selected: (String) -> Unit
+) {
     var isExpanded by remember { mutableStateOf(false) }
 //    val options = listOf("Option 1", "Option 2", "Option 3", "Option 4")
     var selectedOption by remember { mutableStateOf("") }
     selected(selectedOption)
 
     Box(
-        modifier = Modifier
-            .wrapContentSize(Alignment.TopStart)
+        modifier = modifier
+//            .wrapContentSize(Alignment.TopStart)
             .padding(end = 16.dp)
-            .width(300.dp)
     ) {
         // 1. The Anchor: The button the user clicks
-        OutlinedTextField(
+        BasicTextField(
             value = selectedOption,
-            onValueChange = { selectedOption = it },
-            label = { Text(label) },
-            trailingIcon = {
-                Text(
-                    text = "down",
-                    modifier = Modifier.clickable {
-                        isExpanded = true
-                    }
-                )
-//                Icon(
-//                    imageVector = vectorResource(Res.drawable.compose_multiplatform),
-//                    contentDescription = "Open menu",
-//                    modifier = Modifier.clickable {
-//                        isExpanded = true
-//                    }
-//                )
+            onValueChange = {
+                selectedOption = it
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = androidx.compose.ui.graphics.Color.Black
+                ),
+            decorationBox = {
+                Row(
+                    modifier = Modifier.padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Box(Modifier.weight(1f).padding(end = 4.dp)) { it() }
+                    Text(
+                        text = "🔽",
+                        modifier = Modifier.clickable {
+                            isExpanded = true
+                        }
+                    )
+                }
             }
         )
 

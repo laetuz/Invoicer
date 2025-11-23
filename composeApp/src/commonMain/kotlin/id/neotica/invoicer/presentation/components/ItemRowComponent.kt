@@ -25,7 +25,7 @@ fun ItemRowComponent(
             rowOne()
         }
         Column(
-            Modifier.weight(1f)
+            Modifier.weight(0.5f)
         ) { rowTwo() }
         Column(
             Modifier.weight(1f)

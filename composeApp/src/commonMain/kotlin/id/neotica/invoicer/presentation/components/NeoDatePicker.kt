@@ -1,10 +1,13 @@
 package id.neotica.invoicer.presentation.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -13,8 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import id.neotica.invoicer.maker.toFormattedDate
+import id.neotica.invoicer.presentation.theme.NeoColor
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -30,21 +36,41 @@ fun NeoDatePicker(
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = kotlin.time.Clock.System.now().toEpochMilliseconds())
 
     // Read-only text field that shows the selected date
-    OutlinedTextField(
+    BasicTextField(
         value = selectedDate,
         onValueChange = {}, // Not editable by typing
         readOnly = true,
-        label = { Text(label) },
-        trailingIcon = {
-            Text(
-                text = "Select",
-                modifier = Modifier.clickable {
-                    isDatePickerOpen = true // Open the dialog on icon click
-                }
-            )
+//        label = { Text(label) },
+        decorationBox = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("$label: ")
+                it()
+                Text(
+                    text = "📅",
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .border(
+                            width = 1.dp,
+                            color = NeoColor.black
+                        )
+                        .clickable {
+                            isDatePickerOpen = true // Open the dialog on icon click
+                        }
+                        .padding(4.dp)
+                )
+            }
         },
-        modifier = Modifier.clickable {
-            isDatePickerOpen = true // Open the dialog on text field click
+        modifier = Modifier
+
+            .border(
+                width = 1.dp,
+                color = NeoColor.black
+            )
+            .padding(4.dp)
+            .clickable {
+            isDatePickerOpen = true
         }
     )
 
